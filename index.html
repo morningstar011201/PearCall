@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PearCall — Instant Voice</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -560,6 +561,45 @@
 <audio id="remote-audio" autoplay playsinline></audio>
 
 <script>
+  // ─── Supabase Analytics ───────────────────────────────────────────
+  const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+  const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+  const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // Device ID — persistent, anonymous
+  let _deviceId = localStorage.getItem('pc_device_id');
+  if (!_deviceId) {
+    _deviceId = 'dev_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem('pc_device_id', _deviceId);
+  }
+
+  // Device type
+  const _deviceType = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)
+    ? (/iPad|Tablet/i.test(navigator.userAgent) ? 'tablet' : 'mobile')
+    : 'desktop';
+
+  // Country — fetch once
+  let _country = null;
+  fetch('https://ipapi.co/json/')
+    .then(r => r.json())
+    .then(d => { _country = d.country_name || d.country || null; })
+    .catch(() => {});
+
+  async function track(eventType, extra = {}) {
+    try {
+      await _sb.from('events').insert({
+        event_type: eventType,
+        room_id: extra.room_id || null,
+        device_id: _deviceId,
+        country: _country,
+        device_type: _deviceType,
+        call_duration: extra.call_duration || null,
+        metadata: extra.metadata || null
+      });
+    } catch(e) {}
+  }
+  // ─────────────────────────────────────────────────────────────────
+
   const PEER_PREFIX = 'pearroom-';
 
   let peer = null;
@@ -599,6 +639,7 @@
   }
 
   function showError(msg) {
+    track('call_failed', { metadata: { reason: msg } });
     document.getElementById('error-msg').textContent = msg;
     show('error');
     cleanup();
@@ -654,6 +695,7 @@
 
   function onCallConnected(call, stream) {
     currentCall = call;
+    track('call_connected', { room_id: call.peer ? call.peer.replace(PEER_PREFIX,'') : null });
     const audio = document.getElementById('remote-audio');
     audio.srcObject = stream;
     audio.play().catch(() => {});
@@ -667,6 +709,7 @@
 
   function onCallEnded() {
     clearInterval(timerInterval);
+    track('call_ended', { call_duration: timerSeconds });
     document.getElementById('final-timer').textContent = formatTime(timerSeconds);
     show('ended');
     cleanup(false);
@@ -700,6 +743,7 @@
 
     isHost = true;
     document.getElementById('btn-create').disabled = false;
+    track('room_created', { room_id: roomId });
 
     const link = getShareLink(roomId);
     document.getElementById('room-link').textContent = link;
@@ -708,6 +752,7 @@
 
     // Auto-copy link
     navigator.clipboard.writeText(link).then(() => {
+      track('link_copied', { room_id: roomId });
       const badge = document.getElementById('auto-copy-badge');
       badge.style.display = 'flex';
       setTimeout(() => { badge.style.display = 'none'; }, 3500);
@@ -729,6 +774,7 @@
 
   async function joinRoom(roomId) {
     document.getElementById('btn-join').disabled = true;
+    track('join_clicked', { room_id: roomId });
 
     if (!await getMic()) { document.getElementById('btn-join').disabled = false; return; }
 
@@ -792,6 +838,7 @@
   function copyLink() {
     const link = document.getElementById('room-link').textContent;
     navigator.clipboard.writeText(link).then(() => {
+      track('link_copied');
       const box = document.getElementById('link-box');
       const badge = document.getElementById('copy-badge');
       badge.textContent = 'Copied!';
@@ -850,7 +897,9 @@
   // Init
   (function init() {
     const roomId = getRoomFromUrl();
+    track('session_started');
     if (roomId) {
+      track('link_opened', { room_id: roomId });
       document.getElementById('join-code-display').textContent = roomId;
       show('join');
     } else {
