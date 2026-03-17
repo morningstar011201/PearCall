@@ -893,11 +893,10 @@
   }
 
   function checkNet() {
-    if (!navigator.onLine) { setNetStatus(false); return; }
-    fetch('https://www.google.com/favicon.ico', { mode: 'no-cors', cache: 'no-store' })
-      .then(() => setNetStatus(true))
-      .catch(() => setNetStatus(false));
-  }
+  setNetStatus(navigator.onLine);
+  setTimeout(() => setNetStatus(navigator.onLine), 2000);
+  setTimeout(() => setNetStatus(navigator.onLine), 5000);
+}
 
   window.addEventListener('online', () => checkNet());
   window.addEventListener('offline', () => setNetStatus(false));
