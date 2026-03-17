@@ -647,17 +647,29 @@
     }
   }
 
-  function initPeer(id) {
-    return new Promise((resolve, reject) => {
-      const p = new Peer(id ? PEER_PREFIX + id : undefined, {
-        debug: 0,
-        config: {
-          iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:stun1.l.google.com:19302' }
-          ]
-        }
-      });
+  async function getTurnCredentials() {
+  try {
+    const res = await fetch('https://ghostcall-turn.mr-morningstar011201.workers.dev');
+    const data = await res.json();
+    return data.iceServers || [];
+  } catch(e) {
+    return [];
+  }
+}
+
+function initPeer(id) {
+  return new Promise(async (resolve, reject) => {
+    const turnServers = await getTurnCredentials();
+    const p = new Peer(id ? PEER_PREFIX + id : undefined, {
+      debug: 0,
+      config: {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' },
+          ...turnServers
+        ]
+      }
+    });
       p.on('open', () => resolve(p));
       p.on('error', (err) => {
         if (err.type === 'unavailable-id') {
