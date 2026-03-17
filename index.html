@@ -881,26 +881,22 @@
 
   // Network status
   function setNetStatus(online) {
-    const el = document.getElementById('net-status');
-    const label = document.getElementById('net-label');
-    if (online) {
-      el.className = 'net-status online';
-      label.textContent = 'Online';
-    } else {
-      el.className = 'net-status connecting';
-      label.textContent = 'Connecting';
-    }
+  const el = document.getElementById('net-status');
+  const label = document.getElementById('net-label');
+  if (online) {
+    el.className = 'net-status online';
+    label.textContent = 'Online';
+  } else {
+    el.className = 'net-status connecting';
+    label.textContent = 'Connecting';
   }
-
-  function checkNet() {
-  setNetStatus(navigator.onLine);
-  setTimeout(() => setNetStatus(navigator.onLine), 2000);
-  setTimeout(() => setNetStatus(navigator.onLine), 5000);
 }
 
-  window.addEventListener('online', () => checkNet());
-  window.addEventListener('offline', () => setNetStatus(false));
-  checkNet();
+// Just set online immediately — if the page loaded, we have internet
+setNetStatus(true);
+
+window.addEventListener('offline', () => setNetStatus(false));
+window.addEventListener('online', () => setNetStatus(true));
 
   // Init
   (function init() {
