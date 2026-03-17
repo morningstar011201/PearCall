@@ -407,7 +407,7 @@
   .net-status.connecting { color: var(--text-muted); border-color: var(--border); }
   .net-status.connecting .ns-dot { background: var(--text-muted); animation: blink 0.9s infinite; }
 
-  .net-status.online { color: var(--pear-dim); border-color: var(--pear-dark); background: #0a1500; }
+  .net-status.online { color: var(--pear-dim); border-color: var(--pear-dark); background: #130e28; }
   .net-status.online .ns-dot { background: var(--pear); animation: pulse 2s infinite; }
 </style>
 </head>
@@ -893,10 +893,13 @@
   }
 
   function checkNet() {
-    setNetStatus(navigator.onLine);
+    if (!navigator.onLine) { setNetStatus(false); return; }
+    fetch('https://www.google.com/favicon.ico', { mode: 'no-cors', cache: 'no-store' })
+      .then(() => setNetStatus(true))
+      .catch(() => setNetStatus(false));
   }
 
-  window.addEventListener('online', () => setNetStatus(true));
+  window.addEventListener('online', () => checkNet());
   window.addEventListener('offline', () => setNetStatus(false));
   checkNet();
 
