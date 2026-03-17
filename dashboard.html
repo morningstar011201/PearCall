@@ -18,19 +18,19 @@
     --text: #e8e0f8;
     --text-dim: #7a6aaa;
     --text-muted: #3d3060;
-    --pear: #c8b8ff;
-    --pear-dim: #9880dd;
-    --pear-dark: #4a3880;
+    --accent: #c8b8ff;
+    --accent-dim: #9880dd;
+    --accent-dark: #4a3880;
     --red: #e84040;
-    --red-dim: #3a1010;
     --font: 'Azeret Mono', monospace;
   }
+
+  *, body { font-family: var(--font); }
 
   html, body {
     min-height: 100%;
     background: var(--bg);
     color: var(--text);
-    font-family: var(--font);
     font-size: 13px;
     line-height: 1.5;
   }
@@ -78,7 +78,7 @@
   .login-title {
     font-size: 18px;
     font-weight: 700;
-    color: var(--pear);
+    color: var(--accent);
   }
 
   .login-sub {
@@ -88,16 +88,14 @@
     letter-spacing: 0.1em;
   }
 
+  .field { margin-bottom: 1rem; }
+
   .field-label {
     font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.12em;
     color: var(--text-muted);
     margin-bottom: 6px;
-  }
-
-  .field {
-    margin-bottom: 1rem;
   }
 
   input[type=email], input[type=password] {
@@ -114,14 +112,14 @@
   }
 
   input[type=email]:focus, input[type=password]:focus {
-    border-color: var(--pear-dark);
+    border-color: var(--accent-dark);
   }
 
   .btn-login {
     width: 100%;
     padding: 0.85rem;
-    background: var(--pear);
-    color: #0a0f00;
+    background: var(--accent);
+    color: #0a080f;
     font-family: var(--font);
     font-size: 13px;
     font-weight: 700;
@@ -134,7 +132,7 @@
     margin-top: 0.5rem;
   }
 
-  .btn-login:hover { background: #d4f040; }
+  .btn-login:hover { background: #ddd0ff; }
   .btn-login:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .login-error {
@@ -160,40 +158,29 @@
     z-index: 5;
   }
 
-  .topbar-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  .topbar-left { display: flex; align-items: center; gap: 10px; }
 
   .topbar-title {
     font-size: 15px;
     font-weight: 700;
-    color: var(--pear);
+    color: var(--accent);
   }
 
   .topbar-badge {
     font-size: 10px;
-    background: var(--pear-dark);
-    color: var(--pear);
+    background: var(--accent-dark);
+    color: var(--accent);
     padding: 2px 8px;
     border-radius: 2px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
   }
 
-  .topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
 
-  .admin-email {
-    font-size: 11px;
-    color: var(--text-muted);
-  }
+  .admin-email { font-size: 11px; color: var(--text-muted); }
 
-  .btn-signout {
+  .btn-signout, .btn-refresh {
     font-family: var(--font);
     font-size: 11px;
     background: transparent;
@@ -208,22 +195,7 @@
   }
 
   .btn-signout:hover { border-color: var(--red); color: var(--red); }
-
-  .btn-refresh {
-    font-family: var(--font);
-    font-size: 11px;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    padding: 4px 12px;
-    border-radius: 3px;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    transition: all 0.15s;
-  }
-
-  .btn-refresh:hover { border-color: var(--pear-dark); color: var(--pear-dim); }
+  .btn-refresh:hover { border-color: var(--accent-dark); color: var(--accent-dim); }
 
   .main {
     padding: 1.5rem;
@@ -240,7 +212,6 @@
     margin-top: 1.75rem;
   }
 
-  /* Stat cards */
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -265,20 +236,14 @@
   .stat-value {
     font-size: 28px;
     font-weight: 700;
-    color: var(--pear);
+    color: var(--accent);
     line-height: 1;
   }
 
-  .stat-sub {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 4px;
-  }
-
+  .stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
   .stat-card.red .stat-value { color: var(--red); }
   .stat-card.dim .stat-value { color: var(--text-dim); font-size: 22px; }
 
-  /* Charts */
   .charts-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -306,23 +271,11 @@
     margin-bottom: 1rem;
   }
 
-  .chart-wrap {
-    position: relative;
-    height: 200px;
-  }
+  .chart-wrap { position: relative; height: 200px; }
 
-  /* Funnel */
-  .funnel {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
+  .funnel { display: flex; flex-direction: column; gap: 6px; }
 
-  .funnel-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  .funnel-row { display: flex; align-items: center; gap: 10px; }
 
   .funnel-label {
     font-size: 11px;
@@ -343,30 +296,22 @@
 
   .funnel-bar {
     height: 100%;
-    background: var(--pear-dark);
+    background: var(--accent-dark);
     border-radius: 2px;
     transition: width 0.6s ease;
-    display: flex;
-    align-items: center;
-    padding-left: 8px;
     min-width: 30px;
   }
 
   .funnel-count {
     font-size: 11px;
-    color: var(--pear-dim);
+    color: var(--accent-dim);
     font-weight: 600;
     width: 48px;
     text-align: right;
     flex-shrink: 0;
   }
 
-  /* Table */
-  .data-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-  }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
 
   .data-table th {
     text-align: left;
@@ -386,9 +331,8 @@
   }
 
   .data-table tr:last-child td { border-bottom: none; }
-  .data-table td:last-child { text-align: right; color: var(--pear-dim); font-weight: 600; }
+  .data-table td:last-child { text-align: right; color: var(--accent-dim); font-weight: 600; }
 
-  /* Loading */
   .loading {
     color: var(--text-muted);
     font-size: 12px;
@@ -459,7 +403,6 @@
     <div id="loading-state" class="loading">Loading analytics…</div>
     <div id="data-content" class="hidden">
 
-      <!-- KPI cards -->
       <div class="section-title">Overview</div>
       <div class="stats-grid">
         <div class="stat-card">
@@ -490,11 +433,10 @@
         <div class="stat-card dim">
           <div class="stat-label">Avg Duration</div>
           <div class="stat-value" id="s-duration">—</div>
-          <div class="stat-sub">minutes per call</div>
+          <div class="stat-sub">per call</div>
         </div>
       </div>
 
-      <!-- Charts row 1 -->
       <div class="section-title">Activity — Last 14 Days</div>
       <div class="chart-card">
         <div class="chart-title">Daily Events</div>
@@ -503,7 +445,6 @@
         </div>
       </div>
 
-      <!-- Charts row 2 -->
       <div class="section-title">Funnel & Breakdown</div>
       <div class="charts-grid wide">
         <div class="chart-card">
@@ -518,12 +459,11 @@
         </div>
       </div>
 
-      <!-- Charts row 3 -->
       <div class="section-title">Geography & Duration</div>
       <div class="charts-grid">
         <div class="chart-card">
           <div class="chart-title">Top Countries</div>
-          <table class="data-table" id="country-table">
+          <table class="data-table">
             <thead><tr><th>Country</th><th>Sessions</th></tr></thead>
             <tbody id="country-tbody"></tbody>
           </table>
@@ -536,13 +476,13 @@
         </div>
       </div>
 
-    </div><!-- /data-content -->
-  </div><!-- /main -->
-</div><!-- /dashboard -->
+    </div>
+  </div>
+</div>
 
 <script>
-  const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-  const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+  const SUPABASE_URL = 'https://joixomjjddckbdvoxtgy.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvaXhvbWpqZGRja2Jkdm94dGd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2NjAzOTUsImV4cCI6MjA4OTIzNjM5NX0.o6QYrHk04dSgMBFO6Vg2NuDcQt-uoLcLMHxTMryk3Ek';
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   let charts = {};
@@ -555,6 +495,7 @@
     const err = document.getElementById('login-error');
 
     if (!email || !pass) { err.textContent = 'Enter email and password.'; return; }
+
     btn.disabled = true;
     btn.textContent = 'Signing in…';
     err.textContent = '';
@@ -597,12 +538,8 @@
 
     try {
       const [kpi, timeline, devices, countries, durations, funnel] = await Promise.all([
-        fetchKPI(),
-        fetchTimeline(),
-        fetchDevices(),
-        fetchCountries(),
-        fetchDurations(),
-        fetchFunnel()
+        fetchKPI(), fetchTimeline(), fetchDevices(),
+        fetchCountries(), fetchDurations(), fetchFunnel()
       ]);
 
       renderKPI(kpi);
@@ -615,7 +552,7 @@
       document.getElementById('loading-state').classList.add('hidden');
       document.getElementById('data-content').classList.remove('hidden');
     } catch(e) {
-      document.getElementById('loading-state').textContent = 'Failed to load data. Check your Supabase config.';
+      document.getElementById('loading-state').textContent = 'Failed to load. Check your Supabase keys.';
     }
   }
 
@@ -626,18 +563,14 @@
 
   async function fetchKPI() {
     const [sessions, rooms, connected, failed, durRows] = await Promise.all([
-      countEvent('session_started'),
-      countEvent('room_created'),
-      countEvent('call_connected'),
-      countEvent('call_failed'),
+      countEvent('session_started'), countEvent('room_created'),
+      countEvent('call_connected'), countEvent('call_failed'),
       sb.from('events').select('call_duration').eq('event_type', 'call_ended').not('call_duration', 'is', null)
     ]);
-
     const durs = (durRows.data || []).map(r => r.call_duration);
     const avgDur = durs.length ? Math.round(durs.reduce((a,b) => a+b, 0) / durs.length) : 0;
     const attempts = connected + failed;
     const rate = attempts > 0 ? Math.round((connected / attempts) * 100) : 0;
-
     return { sessions, rooms, connected, failed, avgDur, rate };
   }
 
@@ -652,48 +585,33 @@
     const days = {};
     for (let i = 0; i < 14; i++) {
       const d = new Date(); d.setDate(d.getDate() - (13 - i));
-      const key = d.toISOString().slice(0,10);
-      days[key] = { sessions: 0, calls: 0 };
+      days[d.toISOString().slice(0,10)] = { sessions: 0, calls: 0 };
     }
-
     (data || []).forEach(row => {
       const key = row.created_at.slice(0,10);
       if (!days[key]) return;
       if (row.event_type === 'session_started') days[key].sessions++;
       if (row.event_type === 'call_connected') days[key].calls++;
     });
-
     return days;
   }
 
   async function fetchDevices() {
-    const { data } = await sb.from('events')
-      .select('device_type')
-      .eq('event_type', 'session_started')
-      .not('device_type', 'is', null);
-
+    const { data } = await sb.from('events').select('device_type').eq('event_type', 'session_started').not('device_type', 'is', null);
     const counts = {};
     (data || []).forEach(r => { counts[r.device_type] = (counts[r.device_type] || 0) + 1; });
     return counts;
   }
 
   async function fetchCountries() {
-    const { data } = await sb.from('events')
-      .select('country')
-      .eq('event_type', 'session_started')
-      .not('country', 'is', null);
-
+    const { data } = await sb.from('events').select('country').eq('event_type', 'session_started').not('country', 'is', null);
     const counts = {};
     (data || []).forEach(r => { counts[r.country] = (counts[r.country] || 0) + 1; });
     return Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,8);
   }
 
   async function fetchDurations() {
-    const { data } = await sb.from('events')
-      .select('call_duration')
-      .eq('event_type', 'call_ended')
-      .not('call_duration', 'is', null);
-
+    const { data } = await sb.from('events').select('call_duration').eq('event_type', 'call_ended').not('call_duration', 'is', null);
     const buckets = { '<1m': 0, '1-3m': 0, '3-10m': 0, '10-30m': 0, '>30m': 0 };
     (data || []).forEach(r => {
       const s = r.call_duration;
@@ -719,17 +637,12 @@
     document.getElementById('s-connected').textContent = connected.toLocaleString();
     document.getElementById('s-failed').textContent = failed.toLocaleString();
     document.getElementById('s-rate').textContent = rate + '%';
-
-    const mins = Math.floor(avgDur / 60);
-    const secs = avgDur % 60;
-    document.getElementById('s-duration').textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+    const m = Math.floor(avgDur / 60), s = avgDur % 60;
+    document.getElementById('s-duration').textContent = m + ':' + (s < 10 ? '0' : '') + s;
   }
 
   function renderTimeline(days) {
-    const labels = Object.keys(days).map(d => {
-      const dt = new Date(d + 'T00:00:00');
-      return dt.toLocaleDateString('en', { month: 'short', day: 'numeric' });
-    });
+    const labels = Object.keys(days).map(d => new Date(d + 'T00:00:00').toLocaleDateString('en', { month: 'short', day: 'numeric' }));
     const sessions = Object.values(days).map(d => d.sessions);
     const calls = Object.values(days).map(d => d.calls);
 
@@ -739,31 +652,12 @@
       data: {
         labels,
         datasets: [
-          {
-            label: 'Sessions',
-            data: sessions,
-            borderColor: '#9880dd',
-            backgroundColor: 'rgba(152,128,221,0.08)',
-            tension: 0.3,
-            fill: true,
-            pointRadius: 3,
-            pointBackgroundColor: '#9880dd'
-          },
-          {
-            label: 'Calls',
-            data: calls,
-            borderColor: '#c8b8ff',
-            backgroundColor: 'rgba(200,184,255,0.06)',
-            tension: 0.3,
-            fill: true,
-            pointRadius: 3,
-            pointBackgroundColor: '#c8b8ff'
-          }
+          { label: 'Sessions', data: sessions, borderColor: '#9880dd', backgroundColor: 'rgba(152,128,221,0.08)', tension: 0.3, fill: true, pointRadius: 3, pointBackgroundColor: '#9880dd' },
+          { label: 'Calls', data: calls, borderColor: '#c8b8ff', backgroundColor: 'rgba(200,184,255,0.06)', tension: 0.3, fill: true, pointRadius: 3, pointBackgroundColor: '#c8b8ff' }
         ]
       },
       options: {
-        responsive: true,
-        maintainAspectRatio: false,
+        responsive: true, maintainAspectRatio: false,
         plugins: { legend: { labels: { color: '#7a6aaa', font: { family: 'Azeret Mono', size: 11 }, boxWidth: 10 } } },
         scales: {
           x: { ticks: { color: '#3d3060', font: { family: 'Azeret Mono', size: 10 } }, grid: { color: '#181424' } },
@@ -774,56 +668,36 @@
   }
 
   function renderDevices(counts) {
-    const labels = Object.keys(counts);
-    const values = Object.values(counts);
-    const colors = ['#c8b8ff', '#9880dd', '#4a3880'];
-
     if (charts.device) charts.device.destroy();
     charts.device = new Chart(document.getElementById('chart-device'), {
       type: 'doughnut',
       data: {
-        labels,
-        datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }]
+        labels: Object.keys(counts),
+        datasets: [{ data: Object.values(counts), backgroundColor: ['#c8b8ff','#9880dd','#4a3880'], borderWidth: 0 }]
       },
       options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: { color: '#7a6aaa', font: { family: 'Azeret Mono', size: 11 }, boxWidth: 10, padding: 12 }
-          }
-        }
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom', labels: { color: '#7a6aaa', font: { family: 'Azeret Mono', size: 11 }, boxWidth: 10, padding: 12 } } }
       }
     });
   }
 
   function renderCountries(entries) {
-    const tbody = document.getElementById('country-tbody');
-    tbody.innerHTML = entries.length === 0
+    document.getElementById('country-tbody').innerHTML = entries.length === 0
       ? '<tr><td colspan="2" style="color:var(--text-muted);padding-top:12px;">No data yet</td></tr>'
-      : entries.map(([country, count]) => `<tr><td>${country}</td><td>${count.toLocaleString()}</td></tr>`).join('');
+      : entries.map(([c, n]) => `<tr><td>${c}</td><td>${n.toLocaleString()}</td></tr>`).join('');
   }
 
   function renderDurations(buckets) {
-    const labels = Object.keys(buckets);
-    const values = Object.values(buckets);
-
     if (charts.duration) charts.duration.destroy();
     charts.duration = new Chart(document.getElementById('chart-duration'), {
       type: 'bar',
       data: {
-        labels,
-        datasets: [{
-          data: values,
-          backgroundColor: '#4a3880',
-          borderRadius: 2,
-          hoverBackgroundColor: '#9880dd'
-        }]
+        labels: Object.keys(buckets),
+        datasets: [{ data: Object.values(buckets), backgroundColor: '#4a3880', borderRadius: 2, hoverBackgroundColor: '#9880dd' }]
       },
       options: {
-        responsive: true,
-        maintainAspectRatio: false,
+        responsive: true, maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
           x: { ticks: { color: '#3d3060', font: { family: 'Azeret Mono', size: 11 } }, grid: { color: '#181424' } },
@@ -835,18 +709,12 @@
 
   function renderFunnel(steps) {
     const max = Math.max(...steps.map(s => s.count), 1);
-    const wrap = document.getElementById('funnel-wrap');
-    wrap.innerHTML = steps.map(({ label, count }) => {
-      const pct = Math.max((count / max) * 100, 2);
-      return `
-        <div class="funnel-row">
-          <div class="funnel-label">${label}</div>
-          <div class="funnel-bar-wrap">
-            <div class="funnel-bar" style="width:${pct}%"></div>
-          </div>
-          <div class="funnel-count">${count.toLocaleString()}</div>
-        </div>`;
-    }).join('');
+    document.getElementById('funnel-wrap').innerHTML = steps.map(({ label, count }) => `
+      <div class="funnel-row">
+        <div class="funnel-label">${label}</div>
+        <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${Math.max((count/max)*100,2)}%"></div></div>
+        <div class="funnel-count">${count.toLocaleString()}</div>
+      </div>`).join('');
   }
 
   // ── Boot ──────────────────────────────────────────────────────────
