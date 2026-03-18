@@ -732,6 +732,7 @@ function initPeer(id) {
   function onCallEnded() {
     clearInterval(timerInterval);
     track('call_ended', { call_duration: timerSeconds });
+   if (isHost) removeActiveRoom(window.location.hash.slice(1));
     document.getElementById('final-timer').textContent = formatTime(timerSeconds);
     show('ended');
     cleanup(false);
@@ -793,6 +794,7 @@ async function removeActiveRoom(roomId) {
     isHost = true;
     document.getElementById('btn-create').disabled = false;
     track('room_created', { room_id: roomId });
+   addActiveRoom(roomId);
 
     const link = getShareLink(roomId);
     document.getElementById('room-link').textContent = link;
@@ -845,7 +847,11 @@ async function removeActiveRoom(roomId) {
     }, 20000);
   }
 
-  function cancelCall() { cleanup(); show('idle'); }
+  function cancelCall() {
+  if (isHost) removeActiveRoom(window.location.hash.slice(1));
+  cleanup();
+  show('idle');
+}
   function endCall() { onCallEnded(); }
   function newCall() { cleanup(); show('idle'); }
 
