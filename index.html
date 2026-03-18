@@ -701,7 +701,10 @@
       const res = await fetch('https://ghostcall-turn.mr-morningstar011201.workers.dev', { signal: controller.signal });
       clearTimeout(timeout);
       const data = await res.json();
-      return Array.isArray(servers) ? servers : [];
+      const servers = data.iceServers;
+      if (Array.isArray(servers)) return servers;
+      if (servers && typeof servers === 'object') return [servers];
+      return [];
     } catch(e) { return []; }
   }
 
