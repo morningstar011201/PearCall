@@ -768,8 +768,16 @@ async function removeActiveRoom(roomId) {
 }
  
   async function startHost() {
-    document.getElementById('btn-create').disabled = true;
-    if (!await getMic()) { document.getElementById('btn-create').disabled = false; return; }
+  document.getElementById('btn-create').disabled = true;
+
+  const activeCount = await getActiveRoomCount();
+  if (activeCount >= MAX_ACTIVE_ROOMS) {
+    document.getElementById('btn-create').disabled = false;
+    show('busy');
+    return;
+  }
+
+  if (!await getMic()) { document.getElementById('btn-create').disabled = false; return; }
 
     const roomId = genRoomId();
     setUrl(roomId);
