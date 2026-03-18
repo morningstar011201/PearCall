@@ -746,6 +746,27 @@ function initPeer(id) {
     if (resetUrl) window.history.replaceState(null, '', window.location.pathname);
   }
 
+ const MAX_ACTIVE_ROOMS = 20;
+
+async function getActiveRoomCount() {
+  try {
+    const { count } = await _sb.from('active_rooms').select('*', { count: 'exact', head: true });
+    return count || 0;
+  } catch(e) { return 0; }
+}
+
+async function addActiveRoom(roomId) {
+  try {
+    await _sb.from('active_rooms').insert({ room_id: roomId });
+  } catch(e) {}
+}
+
+async function removeActiveRoom(roomId) {
+  try {
+    await _sb.from('active_rooms').delete().eq('room_id', roomId);
+  } catch(e) {}
+}
+ 
   async function startHost() {
     document.getElementById('btn-create').disabled = true;
     if (!await getMic()) { document.getElementById('btn-create').disabled = false; return; }
