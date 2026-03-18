@@ -28,19 +28,21 @@
   }
 
   html, body {
+    height: 100%;
     background: var(--bg);
     color: var(--text);
     font-family: var(--font);
     font-size: 14px;
     line-height: 1.5;
     overflow-x: hidden;
-    min-height: 100%;
   }
 
   body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    min-height: 100vh;
     padding: 2rem 1.5rem;
   }
 
@@ -65,22 +67,6 @@
     display: flex;
     flex-direction: column;
     gap: 0;
-  }
-
-  .early-banner {
-    display: flex;
-    justify-content: center;
-    padding: 0 0 1.5rem;
-  }
-
-  .early-pill {
-    background: #1a1030;
-    border: 1px solid #2a2040;
-    border-radius: 20px;
-    padding: 6px 16px;
-    font-size: 11px;
-    color: #7a6aaa;
-    letter-spacing: 0.08em;
   }
 
   .brand {
@@ -124,6 +110,7 @@
     border: 1px solid var(--border);
     border-radius: 4px;
     overflow: hidden;
+    transition: all 0.2s;
   }
 
   .panel-head {
@@ -370,6 +357,7 @@
     letter-spacing: 0.06em;
   }
 
+  /* ── Quality indicator ── */
   .quality {
     display: flex;
     align-items: center;
@@ -458,10 +446,14 @@
 </style>
 </head>
 <body>
+
 <div class="wrap">
 
-  <div class="early-banner">
-    <div class="early-pill">👻 Early access — instant calls may occasionally fail.</div>
+  <!-- ① Early access banner -->
+  <div style="display:flex;justify-content:center;padding:0 0 1.5rem;">
+    <div style="background:#1a1030;border:1px solid #2a2040;border-radius:20px;padding:6px 16px;font-size:11px;color:#7a6aaa;letter-spacing:0.08em;">
+      👻 Early access — instant calls may occasionally fail.
+    </div>
   </div>
 
   <div class="brand">
@@ -482,7 +474,7 @@
     </div>
   </div>
 
-  <!-- IDLE -->
+  <!-- IDLE STATE -->
   <div class="panel" id="view-idle">
     <div class="panel-head"><div class="dot"></div>Ready</div>
     <div class="panel-body">
@@ -509,7 +501,7 @@
     </div>
   </div>
 
-  <!-- HOSTING -->
+  <!-- HOSTING STATE -->
   <div class="panel hidden" id="view-host">
     <div class="panel-head">
       <div class="dot active" id="host-dot"></div>
@@ -532,7 +524,7 @@
     </div>
   </div>
 
-  <!-- JOIN -->
+  <!-- JOIN STATE -->
   <div class="panel hidden" id="view-join">
     <div class="panel-head"><div class="dot calling"></div>Incoming Room</div>
     <div class="panel-body">
@@ -545,10 +537,11 @@
     </div>
   </div>
 
-  <!-- CONNECTED -->
+  <!-- CONNECTED STATE -->
   <div class="panel hidden" id="view-connected">
     <div class="panel-head"><div class="dot live"></div>Live Call</div>
     <div class="panel-body">
+      <!-- ③ Quality indicator -->
       <div class="quality" id="call-quality">
         <div class="quality-bars"><span></span><span></span><span></span><span></span></div>
         <div class="quality-label" id="quality-label">Connecting…</div>
@@ -569,7 +562,7 @@
     </div>
   </div>
 
-  <!-- ENDED -->
+  <!-- ENDED STATE -->
   <div class="panel hidden" id="view-ended">
     <div class="panel-head"><div class="dot dead"></div>Call Ended</div>
     <div class="panel-body">
@@ -580,7 +573,7 @@
     </div>
   </div>
 
-  <!-- BUSY -->
+  <!-- ② BUSY STATE -->
   <div class="panel hidden" id="view-busy">
     <div class="panel-head"><div class="dot calling"></div>GhostCall is Busy</div>
     <div class="panel-body">
@@ -592,7 +585,7 @@
     </div>
   </div>
 
-  <!-- ERROR -->
+  <!-- ERROR STATE -->
   <div class="panel hidden" id="view-error">
     <div class="panel-head"><div class="dot dead"></div>Connection Error</div>
     <div class="panel-body">
@@ -609,7 +602,7 @@
 
 <script>
   const SUPABASE_URL = 'https://joixomjjddckbdvoxtgy.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvaXhvbWpqZGRja2Jkdm94dGd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2NjAzOTUsImV4cCI6MjA4OTIzNjM5NX0.o6QYrHk04dSgMBFO6Vg2NuDcQt-uoLcLMHxTMryk3Ek';
+  const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
   const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   let _deviceId = localStorage.getItem('gc_device_id');
@@ -661,7 +654,6 @@
     views.forEach(v => {
       document.getElementById('view-' + v).classList.toggle('hidden', v !== name);
     });
-    window.scrollTo(0, 0);
   }
 
   function genRoomId() {
@@ -676,8 +668,12 @@
     return hash.length >= 4 ? hash.toUpperCase() : null;
   }
 
+  function setUrl(roomId) {
+    window.history.replaceState(null, '', '#' + roomId);
+  }
+
   function getShareLink(roomId) {
-    return window.location.origin + window.location.pathname + '#' + roomId;
+    return window.location.href.split('#')[0] + '#' + roomId;
   }
 
   function showError(msg) {
@@ -697,36 +693,42 @@
     }
   }
 
+  // ④ TURN server — with 3s timeout fallback to STUN only
   async function getTurnCredentials() {
     try {
-      const res = await fetch('https://ghostcall-turn.mr-morningstar011201.workers.dev');
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 3000);
+      const res = await fetch('https://ghostcall-turn.mr-morningstar011201.workers.dev', { signal: controller.signal });
+      clearTimeout(timeout);
       const data = await res.json();
       return data.iceServers || [];
     } catch(e) { return []; }
   }
 
+  // Original working initPeer — now fetches TURN first but falls back if slow
   function initPeer(id) {
-    return new Promise(async (resolve, reject) => {
-      const turnServers = await getTurnCredentials();
-      const p = new Peer(id ? PEER_PREFIX + id : undefined, {
-        debug: 0,
-        config: {
-          iceServers: [
-            { urls: 'stun:stun.l.google.com:19302' },
-            { urls: 'stun:stun1.l.google.com:19302' },
-            ...turnServers
-          ]
-        }
+    return new Promise((resolve, reject) => {
+      getTurnCredentials().then(turnServers => {
+        const p = new Peer(id ? PEER_PREFIX + id : undefined, {
+          debug: 0,
+          config: {
+            iceServers: [
+              { urls: 'stun:stun.l.google.com:19302' },
+              { urls: 'stun:stun1.l.google.com:19302' },
+              ...turnServers
+            ]
+          }
+        });
+        p.on('open', () => resolve(p));
+        p.on('error', (err) => {
+          if (err.type === 'unavailable-id') {
+            reject(new Error('Room is already in use. Try creating a new one.'));
+          } else {
+            reject(new Error('Connection failed: ' + err.type));
+          }
+        });
+        setTimeout(() => reject(new Error('Connection timeout. Check your internet.')), 12000);
       });
-      p.on('open', () => resolve(p));
-      p.on('error', (err) => {
-        if (err.type === 'unavailable-id') {
-          reject(new Error('Room is already in use. Try creating a new one.'));
-        } else {
-          reject(new Error('Connection failed: ' + err.type));
-        }
-      });
-      setTimeout(() => reject(new Error('Connection timeout. Check your internet.')), 12000);
     });
   }
 
@@ -745,6 +747,7 @@
     return m + ':' + (sec < 10 ? '0' : '') + sec;
   }
 
+  // ③ Quality checker — runs after call connects
   async function checkCallQuality() {
     if (!currentCall || !currentCall.peerConnection) return;
     try {
@@ -781,8 +784,8 @@
     show('connected');
     startTimer();
     qualityInterval = setInterval(checkCallQuality, 3000);
-    call.on('close', () => onCallEnded());
-    call.on('error', () => onCallEnded());
+    call.on('close', () => { onCallEnded(); });
+    call.on('error', () => { onCallEnded(); });
   }
 
   function onCallEnded() {
@@ -796,8 +799,8 @@
   }
 
   function cleanup(resetUrl = true) {
-    clearInterval(timerInterval);
-    clearInterval(qualityInterval);
+    if (timerInterval) clearInterval(timerInterval);
+    if (qualityInterval) clearInterval(qualityInterval);
     if (currentCall) { try { currentCall.close(); } catch(e) {} currentCall = null; }
     if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
     if (peer) { try { peer.destroy(); } catch(e) {} peer = null; }
@@ -809,6 +812,7 @@
     }
   }
 
+  // ② Active rooms functions
   async function getActiveRoomCount() {
     try {
       const { count } = await _sb.from('active_rooms').select('*', { count: 'exact', head: true });
@@ -827,6 +831,7 @@
   async function startHost() {
     document.getElementById('btn-create').disabled = true;
 
+    // ② Check active rooms limit
     const activeCount = await getActiveRoomCount();
     if (activeCount >= MAX_ACTIVE_ROOMS) {
       document.getElementById('btn-create').disabled = false;
@@ -834,13 +839,11 @@
       return;
     }
 
-    if (!await getMic()) {
-      document.getElementById('btn-create').disabled = false;
-      return;
-    }
+    if (!await getMic()) { document.getElementById('btn-create').disabled = false; return; }
 
     const roomId = genRoomId();
     currentRoomId = roomId;
+    setUrl(roomId);
 
     try {
       peer = await initPeer(roomId);
@@ -855,7 +858,6 @@
     track('room_created', { room_id: roomId });
     addActiveRoom(roomId);
 
-    window.history.replaceState(null, '', '#' + roomId);
     const link = getShareLink(roomId);
     document.getElementById('room-link').textContent = link;
     document.getElementById('room-code-display').textContent = roomId;
@@ -872,7 +874,7 @@
       document.getElementById('host-dot').className = 'dot calling';
       document.getElementById('host-status-label').textContent = 'Connecting…';
       call.answer(localStream);
-      call.on('stream', (remoteStream) => onCallConnected(call, remoteStream));
+      call.on('stream', (remoteStream) => { onCallConnected(call, remoteStream); });
       call.on('error', () => showError('Connection failed during call.'));
     });
 
@@ -884,10 +886,7 @@
     track('join_clicked', { room_id: roomId });
     currentRoomId = roomId;
 
-    if (!await getMic()) {
-      document.getElementById('btn-join').disabled = false;
-      return;
-    }
+    if (!await getMic()) { document.getElementById('btn-join').disabled = false; return; }
 
     try {
       peer = await initPeer(null);
@@ -902,7 +901,7 @@
     const call = peer.call(PEER_PREFIX + roomId, localStream);
     if (!call) { showError('Could not reach room. The host may have left.'); return; }
 
-    call.on('stream', (remoteStream) => onCallConnected(call, remoteStream));
+    call.on('stream', (remoteStream) => { onCallConnected(call, remoteStream); });
     call.on('error', () => showError('Could not connect. The room may no longer exist.'));
     call.on('close', () => onCallEnded());
 
@@ -950,6 +949,12 @@
     });
   }
 
+  document.getElementById('btn-create').addEventListener('click', startHost);
+  document.getElementById('btn-join').addEventListener('click', () => {
+    const roomId = getRoomFromUrl();
+    if (roomId) joinRoom(roomId);
+  });
+
   function joinByCode() {
     const code = document.getElementById('join-code-input').value.trim().toUpperCase();
     if (code.length < 4) {
@@ -963,15 +968,10 @@
       return;
     }
     currentRoomId = code;
+    setUrl(code);
     document.getElementById('join-code-display').textContent = code;
     joinRoom(code);
   }
-
-  document.getElementById('btn-create').addEventListener('click', startHost);
-  document.getElementById('btn-join').addEventListener('click', () => {
-    const roomId = getRoomFromUrl();
-    if (roomId) joinRoom(roomId);
-  });
 
   window.addEventListener('offline', () => {
     document.getElementById('net-status').className = 'net-status connecting';
