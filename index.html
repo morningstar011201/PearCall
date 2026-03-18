@@ -37,11 +37,11 @@
     overflow-x: hidden;
   }
 
-  body {
+ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     min-height: 100vh;
     padding: 2rem 1.5rem;
   }
@@ -448,13 +448,13 @@
 </style>
 </head>
 <body>
- <div style="display:flex;justify-content:center;padding:8px;position:relative;z-index:10;">
-  <div style="background:#1a1030;border:1px solid #2a2040;border-radius:20px;padding:6px 16px;font-family:'Azeret Mono',monospace;font-size:11px;color:#7a6aaa;letter-spacing:0.08em;">
-    Early access — instant calls may occasionally fail.
-  </div>
-</div>
-
 <div class="wrap">
+  <div style="display:flex;justify-content:center;padding:0 0 1.5rem;position:relative;z-index:10;">
+    <div style="background:#1a1030;border:1px solid #2a2040;border-radius:20px;padding:6px 16px;font-family:'Azeret Mono',monospace;font-size:11px;color:#7a6aaa;letter-spacing:0.08em;">
+      👻 Early access — instant calls may occasionally fail.
+    </div>
+  </div>
+ 
   <div class="brand">
     <svg class="ghost-logo" viewBox="0 0 32 36" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M6 18C6 10.268 10.477 5 16 5C21.523 5 26 10.268 26 18V32C26 32 23 30 20 32C17 34 15 34 12 32C9 30 6 32 6 32V18Z" fill="#c8b8ff" opacity="0.92"/>
