@@ -542,6 +542,21 @@
     </div>
   </div>
 
+ <!-- BUSY STATE -->
+  <div class="panel hidden" id="view-busy">
+    <div class="panel-head">
+      <div class="dot calling"></div>
+      GhostCall is Busy
+    </div>
+    <div class="panel-body">
+      <p style="font-size:28px;text-align:center;margin:0.5rem 0;">👻</p>
+      <p class="status" style="font-size:13px;margin:0.5rem 0;">Too many active calls right now.</p>
+      <p class="status">Try again in a moment.</p>
+      <hr class="divider">
+      <button class="btn-primary" onclick="newCall()">Retry</button>
+    </div>
+  </div>
+ 
   <!-- ERROR STATE -->
   <div class="panel hidden" id="view-error">
     <div class="panel-head">
