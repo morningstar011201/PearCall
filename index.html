@@ -357,6 +357,50 @@
     letter-spacing: 0.06em;
   }
 
+ .quality {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    justify-content: center;
+    margin: 0.5rem 0;
+  }
+
+  .quality-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 14px;
+  }
+
+  .quality-bars span {
+    width: 3px;
+    border-radius: 1px;
+    background: var(--text-muted);
+    display: block;
+  }
+
+  .quality-bars span:nth-child(1) { height: 4px; }
+  .quality-bars span:nth-child(2) { height: 8px; }
+  .quality-bars span:nth-child(3) { height: 12px; }
+  .quality-bars span:nth-child(4) { height: 16px; }
+
+  .quality-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .quality.good .quality-bars span { background: var(--accent); }
+  .quality.good .quality-label { color: var(--accent-dim); }
+
+  .quality.fair .quality-bars span:nth-child(1),
+  .quality.fair .quality-bars span:nth-child(2) { background: #e8a830; }
+  .quality.fair .quality-label { color: #e8a830; }
+
+  .quality.poor .quality-bars span:nth-child(1) { background: var(--red); }
+  .quality.poor .quality-label { color: var(--red); }
+ 
   .hidden { display: none !important; }
 
   .panel { animation: fadein 0.3s ease; }
@@ -512,6 +556,12 @@
       Live Call
     </div>
     <div class="panel-body">
+     <div class="quality" id="call-quality">
+        <div class="quality-bars">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="quality-label" id="quality-label">Connecting…</div>
+      </div>
       <div class="wave" id="wave">
         <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
         <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
@@ -702,6 +752,44 @@ function initPeer(id) {
     });
   }
 
+ let qualityInterval = null;
+
+  async function checkCallQuality() {
+    if (!currentCall || !currentCall.peerConnection) return;
+    try {
+      const stats = await currentCall.peerConnection.getStats();
+      let rtt = 0;
+      let packetLoss = 0;
+      let hasData = false;
+
+      stats.forEach(report => {
+        if (report.type === 'remote-inbound-rtp' && report.kind === 'audio') {
+          rtt = report.roundTripTime || 0;
+          const lost = report.packetsLost || 0;
+          const received = report.packetsReceived || 1;
+          packetLoss = (lost / (lost + received)) * 100;
+          hasData = true;
+        }
+      });
+
+      if (!hasData) return;
+
+      const el = document.getElementById('call-quality');
+      const label = document.getElementById('quality-label');
+
+      if (rtt < 0.15 && packetLoss < 2) {
+        el.className = 'quality good';
+        label.textContent = 'Good';
+      } else if (rtt < 0.4 && packetLoss < 8) {
+        el.className = 'quality fair';
+        label.textContent = 'Fair';
+      } else {
+        el.className = 'quality poor';
+        label.textContent = 'Poor';
+      }
+    } catch(e) {}
+  }
+ 
   function startTimer() {
     timerSeconds = 0;
     clearInterval(timerInterval);
@@ -725,12 +813,14 @@ function initPeer(id) {
     audio.play().catch(() => {});
     show('connected');
     startTimer();
+    qualityInterval = setInterval(checkCallQuality, 3000);
     call.on('close', () => { onCallEnded(); });
     call.on('error', () => { onCallEnded(); });
   }
 
   function onCallEnded() {
     clearInterval(timerInterval);
+    clearInterval(qualityInterval);
     track('call_ended', { call_duration: timerSeconds });
    if (isHost) removeActiveRoom(window.location.hash.slice(1));
     document.getElementById('final-timer').textContent = formatTime(timerSeconds);
