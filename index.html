@@ -616,10 +616,6 @@
     : 'desktop';
 
   let _country = null;
-  fetch('https://ipapi.co/json/')
-    .then(r => r.json())
-    .then(d => { _country = d.country_name || d.country || null; })
-    .catch(() => {});
 
   async function track(eventType, extra = {}) {
     try {
@@ -701,6 +697,7 @@
       const res = await fetch('https://ghostcall-turn.mr-morningstar011201.workers.dev', { signal: controller.signal });
       clearTimeout(timeout);
       const data = await res.json();
+      if (data.country) _country = data.country;
       const servers = data.iceServers;
       if (Array.isArray(servers)) return servers;
       if (servers && typeof servers === 'object') return [servers];
