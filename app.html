@@ -5,6 +5,11 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 36'><path d='M6 18C6 10.268 10.477 5 16 5C21.523 5 26 10.268 26 18V32C26 32 23 30 20 32C17 34 15 34 12 32C9 30 6 32 6 32V18Z' fill='%23c8b8ff'/><circle cx='12' cy='18' r='2.5' fill='%230a080f'/><circle cx='20' cy='18' r='2.5' fill='%230a080f'/><circle cx='13' cy='17' r='0.8' fill='%23c8b8ff'/><circle cx='21' cy='17' r='0.8' fill='%23c8b8ff'/></svg>">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GhostCall — Instant Voice</title>
+ <link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0a080f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GhostCall">
  <!-- SEO -->
 <meta name="description" content="Start an instant voice call on GhostCall. No signup required. Share a link or 6-digit code and connect instantly from any browser.">
 <meta name="robots" content="index, follow">
@@ -610,7 +615,10 @@
 </div>
 
 <audio id="remote-audio" autoplay playsinline></audio>
-
+<audio id="silent-audio" loop>
+  <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=" type="audio/wav">
+</audio>
+ 
 <script>
   const SUPABASE_URL = 'https://joixomjjddckbdvoxtgy.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvaXhvbWpqZGRja2Jkdm94dGd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2NjAzOTUsImV4cCI6MjA4OTIzNjM5NX0.o6QYrHk04dSgMBFO6Vg2NuDcQt-uoLcLMHxTMryk3Ek';
@@ -795,13 +803,15 @@
     show('connected');
     startTimer();
     qualityInterval = setInterval(checkCallQuality, 3000);
+    startBackgroundFix();
     call.on('close', () => { onCallEnded(); });
     call.on('error', () => { onCallEnded(); });
   }
 
-  function onCallEnded() {
+ function onCallEnded() {
     clearInterval(timerInterval);
     clearInterval(qualityInterval);
+    stopBackgroundFix();
     track('call_ended', { call_duration: timerSeconds });
     if (isHost && currentRoomId) removeActiveRoom(currentRoomId);
     document.getElementById('final-timer').textContent = formatTime(timerSeconds);
@@ -1005,6 +1015,44 @@
       show('idle');
     }
   })();
+ // Wake Lock + Silent Audio
+  let wakeLock = null;
+
+  async function startBackgroundFix() {
+    try {
+      if ('wakeLock' in navigator) {
+        wakeLock = await navigator.wakeLock.request('screen');
+      }
+    } catch(e) {}
+    try {
+      const silent = document.getElementById('silent-audio');
+      silent.volume = 0;
+      await silent.play();
+    } catch(e) {}
+  }
+
+  function stopBackgroundFix() {
+    try {
+      if (wakeLock) { wakeLock.release(); wakeLock = null; }
+    } catch(e) {}
+    try {
+      const silent = document.getElementById('silent-audio');
+      silent.pause();
+      silent.currentTime = 0;
+    } catch(e) {}
+  }
+
+  document.addEventListener('visibilitychange', async () => {
+    if (wakeLock !== null && document.visibilityState === 'visible' && currentCall) {
+      try {
+        wakeLock = await navigator.wakeLock.request('screen');
+      } catch(e) {}
+    }
+  });
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  }
 </script>
 </body>
 </html>
