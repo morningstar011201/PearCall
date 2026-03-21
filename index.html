@@ -505,6 +505,11 @@
   </div>
 
   <p class="hero-note">Free forever · No credit card · Works in any browser</p>
+
+  <div id="call-counter" style="margin-top:2rem;display:flex;align-items:center;justify-content:center;gap:10px;background:#1a1030;border:1px solid #2a2040;border-radius:20px;padding:10px 24px;">
+    <span style="font-size:13px;color:#7a7490;font-family:'Azeret Mono',monospace;letter-spacing:0.06em;">⚡ Instant calls made:</span>
+    <span id="call-count" style="font-size:16px;font-weight:700;color:#c8b8ff;font-family:'Azeret Mono',monospace;letter-spacing:0.05em;">—</span>
+  </div>
 </section>
 
 <!-- HOW IT WORKS -->
@@ -624,5 +629,27 @@
   <div class="footer-right">No data stored · No accounts · Calls vanish when you hang up</div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const _sb2 = supabase.createClient(
+    'https://joixomjjddckbdvoxtgy.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvaXhvbWpqZGRja2Jkdm94dGd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2NjAzOTUsImV4cCI6MjA4OTIzNjM5NX0.o6QYrHk04dSgMBFO6Vg2NuDcQt-uoLcLMHxTMryk3Ek'
+  );
+
+  async function updateCallCount() {
+    try {
+      const { count } = await _sb2.from('events')
+        .select('*', { count: 'exact', head: true })
+        .eq('event_type', 'call_connected');
+      if (count !== null) {
+        document.getElementById('call-count').textContent = count.toLocaleString();
+      }
+    } catch(e) {}
+  }
+
+  updateCallCount();
+  setInterval(updateCallCount, 30000);
+</script>
+ 
 </body>
 </html>
