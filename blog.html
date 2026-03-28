@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — GhostCall</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="description" content="GhostCall blog — thoughts on privacy, anonymous calls, and why we built a voice app that vanishes when you hang up.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://ghostcall.space/blog">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --accent: #7c3aed;
+    --accent-light: #ede9fe;
+    --ghost: #c8b8ff;
+    --text: #1a1a1a;
+    --text-dim: #4b4b6b;
+    --text-muted: #9090a0;
+    --border: #e5e5e5;
+    --bg: #ffffff;
+    --bg2: #faf9ff;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Nav */
+  nav {
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg);
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 700;
+    font-size: 15px;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .nav-links a {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-cta {
+    font-size: 13px;
+    background: var(--accent);
+    color: #fff !important;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-weight: 500;
+  }
+
+  .nav-cta:hover { background: #6d28d9; }
+
+  /* Hero */
+  .blog-hero {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 3.5rem 2rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .blog-hero::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(200,184,255,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .blog-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: -40px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-ghost {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  .blog-hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .blog-hero p {
+    color: var(--text-dim);
+    font-size: 15px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* Blog grid */
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3rem 2rem 5rem;
+    flex: 1;
+  }
+
+  .section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+
+  .post-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    text-decoration: none;
+    display: block;
+    transition: all 0.15s;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .post-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--ghost);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .post-card:hover { border-color: #c8b8ff; box-shadow: 0 2px 12px rgba(124,58,237,0.08); }
+  .post-card:hover::before { opacity: 1; }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0.6rem;
+  }
+
+  .post-tag {
+    font-size: 11px;
+    background: var(--accent-light);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  .post-date {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .post-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+    line-height: 1.4;
+  }
+
+  .post-excerpt {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .post-read {
+    font-size: 12px;
+    color: var(--accent);
+    margin-top: 0.75rem;
+    font-weight: 500;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-brand">
+    <svg width="22" height="26" viewBox="0 0 32 36" fill="none">
+      <path d="M6 18C6 10.268 10.477 5 16 5C21.523 5 26 10.268 26 18V32C26 32 23 30 20 32C17 34 15 34 12 32C9 30 6 32 6 32V18Z" fill="#c8b8ff" opacity="0.92"/>
+      <circle cx="12" cy="18" r="2.5" fill="#0a080f"/>
+      <circle cx="20" cy="18" r="2.5" fill="#0a080f"/>
+      <circle cx="13" cy="17" r="0.8" fill="#c8b8ff"/>
+      <circle cx="21" cy="17" r="0.8" fill="#c8b8ff"/>
+    </svg>
+    GhostCall
+  </a>
+  <div class="nav-links">
+    <a href="/blog">Blog</a>
+    <a href="/contact">Contact</a>
+    <a href="/app" class="nav-cta">Start a Call →</a>
+  </div>
+</nav>
+
+<div class="blog-hero">
+  <div class="hero-ghost">
+    <svg width="36" height="42" viewBox="0 0 32 36" fill="none">
+      <path d="M6 18C6 10.268 10.477 5 16 5C21.523 5 26 10.268 26 18V32C26 32 23 30 20 32C17 34 15 34 12 32C9 30 6 32 6 32V18Z" fill="#c8b8ff" opacity="0.7"/>
+      <circle cx="12" cy="18" r="2.5" fill="#0a080f"/>
+      <circle cx="20" cy="18" r="2.5" fill="#0a080f"/>
+      <circle cx="13" cy="17" r="0.8" fill="#c8b8ff"/>
+      <circle cx="21" cy="17" r="0.8" fill="#c8b8ff"/>
+    </svg>
+  </div>
+  <h1>GhostCall Blog</h1>
+  <p>Thoughts on privacy, communication, and why we think voice calls should vanish when you hang up.</p>
+</div>
+
+<div class="container">
+  <div class="section-label">Latest Posts</div>
+
+  <a class="post-card" href="/blog/what-is-ghostcall">
+    <div class="post-meta">
+      <span class="post-tag">About</span>
+      <span class="post-date">March 2026</span>
+    </div>
+    <div class="post-title">So what actually is GhostCall? (and why does it exist)</div>
+    <div class="post-excerpt">Honest answer — it's a voice calling app where you don't need an account. No signup, no phone number, nothing. Just a link. But there's a bit more to the story of why we built it this way...</div>
+    <div class="post-read">Read post →</div>
+  </a>
+
+</div>
+
+<footer>
+  © 2026 GhostCall ·
+  <a href="/privacy">Privacy</a> ·
+  <a href="/terms">Terms</a> ·
+  <a href="/contact">Contact</a>
+</footer>
+
+</body>
+</html>
