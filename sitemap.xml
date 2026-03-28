@@ -25,4 +25,14 @@
     <priority>0.5</priority>
     <changefreq>monthly</changefreq>
   </url>
+  <url>
+  <loc>https://ghostcall.space/blog</loc>
+  <priority>0.7</priority>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>https://ghostcall.space/blog/what-is-ghostcall</loc>
+  <priority>0.6</priority>
+  <changefreq>monthly</changefreq>
+</url>
 </urlset>
