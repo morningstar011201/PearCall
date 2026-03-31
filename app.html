@@ -458,38 +458,6 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* Call Lock Mode */
-  .call-locked .quality { opacity: 0.25; pointer-events: none; }
-  .call-locked #btn-mute { display: none; }
-  .call-locked #btn-lock { display: none; }
-
-  .lock-overlay {
-    display: none;
-    position: absolute;
-    inset: 0;
-    background: rgba(10, 8, 15, 0.82);
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    border-radius: 4px;
-    z-index: 10;
-  }
-
-  .lock-overlay.active { display: flex; }
-
-  .lock-icon {
-    font-size: 26px;
-    margin-bottom: 4px;
-  }
-
-  .lock-hint {
-    font-size: 11px;
-    color: var(--text-muted);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
   .hidden { display: none !important; }
 
   .panel { animation: fadein 0.3s ease; }
@@ -643,7 +611,7 @@
   <!-- CONNECTED -->
   <div class="panel hidden" id="view-connected">
     <div class="panel-head"><div class="dot live"></div>Live Call</div>
-    <div class="panel-body" style="position:relative;">
+    <div class="panel-body">
       <div class="quality" id="call-quality">
         <div class="quality-bars"><span></span><span></span><span></span><span></span></div>
         <div class="quality-label" id="quality-label">Connecting…</div>
@@ -658,21 +626,7 @@
         <button class="btn-half" id="btn-mute" onclick="toggleMute()">Mute</button>
       </div>
       <hr class="divider">
-      <button class="btn-half" id="btn-lock" onclick="lockCall()" style="width:100%;margin-bottom:10px;">🔒 Lock Call</button>
       <button class="btn-danger" onclick="endCall()">End Call</button>
-
-      <!-- Lock Overlay -->
-      <div class="lock-overlay" id="lock-overlay">
-        <div class="lock-icon">🔒</div>
-        <div class="lock-hint">Screen Locked</div>
-        <div class="timer" id="call-timer-locked" style="font-size:32px;margin:0.5rem 0;">0:00</div>
-        <div class="wave" style="margin:0 0 0.5rem;">
-          <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-          <div class="wave-bar"></div><div class="wave-bar"></div>
-        </div>
-        <button class="btn-danger" onclick="endCall()" style="width:220px;margin-bottom:8px;">End Call</button>
-        <button class="btn-secondary" onclick="unlockCall()" style="width:220px;">🔓 Unlock</button>
-      </div>
     </div>
   </div>
 
@@ -890,9 +844,7 @@
     clearInterval(timerInterval);
     timerInterval = setInterval(() => {
       timerSeconds++;
-      const t = formatTime(timerSeconds);
-      document.getElementById('call-timer').textContent = t;
-      document.getElementById('call-timer-locked').textContent = t;
+      document.getElementById('call-timer').textContent = formatTime(timerSeconds);
     }, 1000);
   }
 
@@ -1082,7 +1034,6 @@
     clearInterval(qualityInterval);
     clearInterval(reconnectTimer);
     stopBackgroundFix();
-    unlockCall();
     track('call_ended', { call_duration: timerSeconds });
     if (isHost && currentRoomId) removeActiveRoom(currentRoomId);
     document.getElementById('final-timer').textContent = formatTime(timerSeconds);
@@ -1237,18 +1188,6 @@
 
   function endCall() { onCallEnded(); }
   function newCall() { cleanup(); show('idle'); }
-
-  function lockCall() {
-    document.getElementById('view-connected').classList.add('call-locked');
-    document.getElementById('lock-overlay').classList.add('active');
-    // sync locked timer with main timer
-    document.getElementById('call-timer-locked').textContent = document.getElementById('call-timer').textContent;
-  }
-
-  function unlockCall() {
-    document.getElementById('view-connected').classList.remove('call-locked');
-    document.getElementById('lock-overlay').classList.remove('active');
-  }
 
   function toggleMute() {
     if (!localStream) return;
